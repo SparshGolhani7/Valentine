@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import html2canvas from 'html2canvas'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 export default function ValentineDay() {
   const [name1, setName1] = useState('')
@@ -13,9 +15,11 @@ export default function ValentineDay() {
 
   const calculateCompatibility = () => {
     if (!name1 || !name2) {
+      playSound('click')
       alert('Please enter both names!')
       return
     }
+    playSound('success')
 
     // Fun fake compatibility calculation
     const name1Sum = name1.toLowerCase().split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)
@@ -62,6 +66,7 @@ export default function ValentineDay() {
     if (!cardRef.current) return
 
     try {
+      playSound('click')
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: '#ffffff',
         scale: 2,
@@ -70,6 +75,7 @@ export default function ValentineDay() {
       link.download = `compatibility-${name1}-${name2}-${Date.now()}.png`
       link.href = canvas.toDataURL()
       link.click()
+      playSound('success')
     } catch (error) {
       console.error('Error generating card:', error)
       alert('Error generating card. Please try again.')
@@ -204,6 +210,7 @@ export default function ValentineDay() {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(shareLink)
+                  playSound('click')
                   alert('Link copied! Share it with your friends! 📋')
                 }}
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:shadow-lg transform transition-all hover:scale-105"
@@ -220,6 +227,7 @@ export default function ValentineDay() {
                 setName2('')
                 setDob1('')
                 setDob2('')
+                playSound('click')
               }}
               className="w-full bg-gray-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-gray-600"
             >
@@ -228,6 +236,8 @@ export default function ValentineDay() {
           </motion.div>
         )}
       </div>
+
+      {resultCard && <NextDayButton currentPath="/valentine" />}
     </div>
   )
 }

@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import html2canvas from 'html2canvas'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 const promiseTypes = {
   funny: [
@@ -34,12 +36,14 @@ export default function PromiseDay() {
     const promises = promiseTypes[selectedType]
     const randomPromise = promises[Math.floor(Math.random() * promises.length)]
     setSelectedPromise(randomPromise)
+    playSound('success')
   }
 
   const downloadCertificate = async () => {
     if (!certificateRef.current) return
 
     try {
+      playSound('click')
       const canvas = await html2canvas(certificateRef.current, {
         backgroundColor: '#ffffff',
         scale: 2,
@@ -48,6 +52,7 @@ export default function PromiseDay() {
       link.download = `promise-certificate-${Date.now()}.png`
       link.href = canvas.toDataURL()
       link.click()
+      playSound('success')
     } catch (error) {
       console.error('Error generating certificate:', error)
       alert('Error generating certificate. Please try again.')
@@ -169,6 +174,8 @@ export default function PromiseDay() {
           </motion.div>
         </div>
       </div>
+
+      {selectedPromise && name && <NextDayButton currentPath="/promise" />}
     </div>
   )
 }

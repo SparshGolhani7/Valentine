@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 const chocolates = [
   { id: 1, emoji: '🍫', name: 'Dark Chocolate', message: 'Rich and intense, just like my love for you!' },
@@ -25,15 +27,18 @@ export default function ChocolateDay() {
 
   const handleFlip = (id) => {
     setFlipped((prev) => ({ ...prev, [id]: !prev[id] }))
+    playSound('click')
   }
 
   const generateMessage = () => {
     const message = sweetMessages[Math.floor(Math.random() * sweetMessages.length)]
     setRandomMessage(message)
+    playSound('success')
   }
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text)
+    playSound('click')
     alert('Message copied! 📋')
   }
 
@@ -121,6 +126,8 @@ export default function ChocolateDay() {
           </motion.div>
         )}
       </motion.div>
+
+      {randomMessage && <NextDayButton currentPath="/chocolate" />}
 
       <style>{`
         .perspective-1000 {

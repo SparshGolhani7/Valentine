@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 export default function TeddyDay() {
   const [hugCount, setHugCount] = useState(0)
@@ -10,6 +12,10 @@ export default function TeddyDay() {
   const handleHug = () => {
     setIsHugging(true)
     setHugCount((prev) => prev + 1)
+    
+    if (soundEnabled) {
+      playSound('hug')
+    }
     
     // Generate hearts
     const newHearts = []
@@ -127,6 +133,8 @@ export default function TeddyDay() {
           </p>
         </motion.div>
       )}
+
+      {hugCount > 0 && <NextDayButton currentPath="/teddy" />}
     </div>
   )
 }

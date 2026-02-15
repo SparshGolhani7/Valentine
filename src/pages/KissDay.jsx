@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 const messages = [
   { id: 1, text: 'You make my heart skip a beat! 💓', blur: true },
@@ -17,7 +19,12 @@ export default function KissDay() {
   const [customBlur, setCustomBlur] = useState(true)
 
   const handleReveal = (id) => {
-    setRevealedMessages((prev) => new Set([...prev, id]))
+    setRevealedMessages((prev) => {
+      if (!prev.has(id)) {
+        playSound('kiss')
+      }
+      return new Set([...prev, id])
+    })
   }
 
   const correctPassword = 'love' // Simple password for demo
@@ -26,7 +33,9 @@ export default function KissDay() {
     if (password.toLowerCase() === correctPassword) {
       setShowPassword(true)
       setCustomBlur(false)
+      playSound('success')
     } else {
+      playSound('click')
       alert('Wrong password! Try again 😉')
       setPassword('')
     }
@@ -39,7 +48,9 @@ export default function KissDay() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center mb-8 sm:mb-12"
       >
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold gradient-text mb-3 sm:mb-4">😘 Kiss Day</h1>
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold gradient-text mb-3 sm:mb-4">
+          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl">😘</span> Kiss Day
+        </h1>
         <p className="text-base sm:text-lg md:text-xl text-gray-600">Reveal Hidden Messages</p>
       </motion.div>
 
@@ -111,6 +122,9 @@ export default function KissDay() {
                 <p className="text-center mt-4 text-xs sm:text-sm opacity-75">
                   Hint: It's a 4-letter word that starts with 'l' 😉
                 </p>
+                <p className="text-center mt-2 text-xs sm:text-sm opacity-90 font-semibold bg-white/20 rounded-lg p-2">
+                  💡 Password: <span className="text-yellow-200">love</span>
+                </p>
               </div>
             </div>
           ) : (
@@ -137,6 +151,7 @@ export default function KissDay() {
                 <button
                   onClick={() => {
                     navigator.clipboard.writeText(customMessage || 'You are special and I wanted to tell you that! ❤️')
+                    playSound('click')
                     alert('Message copied! 📋')
                   }}
                   className="bg-white text-pink-600 px-6 sm:px-8 py-3 rounded-xl font-bold hover:bg-gray-100 text-sm sm:text-base w-full sm:w-auto"
@@ -175,6 +190,8 @@ export default function KissDay() {
           </div>
         </motion.div>
       </div>
+
+      {(showPassword || Array.from(revealedMessages).length > 0) && <NextDayButton currentPath="/kiss" />}
     </div>
   )
 }

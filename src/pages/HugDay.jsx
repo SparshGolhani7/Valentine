@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 // Mock leaderboard data
 const initialLeaderboard = [
@@ -30,6 +32,7 @@ export default function HugDay() {
 
   const handleHug = () => {
     if (!userName && showInput) {
+      playSound('click')
       alert('Please enter your name first!')
       return
     }
@@ -42,6 +45,7 @@ export default function HugDay() {
     setIsHugging(true)
     const newCount = hugCount + 1
     setHugCount(newCount)
+    playSound('hug')
     
     // Update localStorage
     localStorage.setItem('hugDayData', JSON.stringify({ name: userName, count: newCount }))
@@ -196,6 +200,8 @@ export default function HugDay() {
           </div>
         </motion.div>
       </div>
+
+      {hugCount > 0 && <NextDayButton currentPath="/hug" />}
     </div>
   )
 }

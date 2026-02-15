@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 export default function ProposeDay() {
   const [showProposal, setShowProposal] = useState(false)
@@ -17,21 +19,25 @@ export default function ProposeDay() {
     setCurrentChar(0)
     setAnswer(null)
     setShowConfetti(false)
+    playSound('click')
   }
 
   const handleTyping = () => {
     if (currentChar < fullProposal.length) {
       setProposalText(fullProposal.slice(0, currentChar + 1))
       setCurrentChar(currentChar + 1)
+      playSound('click')
     }
   }
 
   const handleYes = () => {
     setAnswer('yes')
     setShowConfetti(true)
+    playSound('confetti')
   }
 
   const handleNo = (e) => {
+    playSound('click')
     const button = e.target
     const rect = button.getBoundingClientRect()
     const maxX = window.innerWidth - rect.width
@@ -159,6 +165,8 @@ export default function ProposeDay() {
           )}
         </motion.div>
       )}
+
+      {answer === 'yes' && <NextDayButton currentPath="/propose" />}
     </div>
   )
 }

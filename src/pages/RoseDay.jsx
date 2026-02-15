@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { playSound } from '../utils/sounds'
+import NextDayButton from '../components/NextDayButton'
 
 export default function RoseDay() {
   const [name, setName] = useState('')
@@ -8,17 +10,25 @@ export default function RoseDay() {
 
   useEffect(() => {
     if (showRose) {
+      let petalCount = 0
       const interval = setInterval(() => {
+        // Create petals from both left and right sides - exactly 50-50 distribution
+        petalCount++
+        const isLeft = petalCount % 2 === 0 // Alternate between left and right for perfect 50-50 split
+        
         setPetals((prev) => [
           ...prev,
           {
-            id: Date.now(),
-            left: Math.random() * 100,
-            delay: Math.random() * 2,
+            id: Date.now() + Math.random() + petalCount,
+            left: isLeft 
+              ? Math.random() * 50  // Left side: 0-50% (exactly half)
+              : 50 + Math.random() * 50, // Right side: 50-100% (exactly half)
+            delay: Math.random() * 1.5,
             duration: 3 + Math.random() * 2,
+            rotation: (Math.random() - 0.5) * 720, // Random rotation direction
           },
         ])
-      }, 300)
+      }, 250) // Slightly faster for more petals
 
       return () => clearInterval(interval)
     }
@@ -28,6 +38,9 @@ export default function RoseDay() {
     if (name.trim()) {
       setShowRose(true)
       setPetals([])
+      playSound('success')
+    } else {
+      playSound('click')
     }
   }
 
@@ -88,19 +101,19 @@ export default function RoseDay() {
         )}
       </AnimatePresence>
 
-      {/* Falling Petals */}
+      {/* Falling Petals from Both Sides */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {petals.map((petal) => (
           <motion.div
             key={petal.id}
-            initial={{ y: -20, x: petal.left + '%', opacity: 1 }}
-            animate={{ y: '100vh', rotate: 360 }}
+            initial={{ y: -20, x: petal.left + '%', opacity: 1, rotate: 0 }}
+            animate={{ y: '100vh', rotate: petal.rotation }}
             transition={{
               duration: petal.duration,
               delay: petal.delay,
               ease: 'linear',
             }}
-            className="absolute text-2xl"
+            className="absolute text-xl sm:text-2xl"
           >
             🌸
           </motion.div>
@@ -124,6 +137,7 @@ export default function RoseDay() {
             <button
               onClick={() => {
                 navigator.clipboard.writeText(shareLink)
+                playSound('click')
                 alert('Link copied! 📋')
               }}
               className="bg-pink-500 text-white px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-pink-600 text-sm sm:text-base whitespace-nowrap"
@@ -133,6 +147,8 @@ export default function RoseDay() {
           </div>
         </motion.div>
       )}
+
+      {showRose && <NextDayButton currentPath="/rose" />}
     </div>
   )
 }
